@@ -11,7 +11,8 @@ module battleship::battleship {
     use std::vector::append;
     use sui::bcs::to_bytes;
 
-    const HIT_MAX: u256 = 17;
+    //const HIT_MAX: u256 = 17;
+    const HIT_MAX: u256 = 2;
     const EGameIndex: u64 = 1;
     const EPlaying: u64 = 2;
     const EFullAccounts: u64 = 3;
@@ -84,7 +85,7 @@ module battleship::battleship {
         proof: vector<u8>,
         ctx: &mut TxContext
     ) {
-        assert!(!table::contains(&mut state.playing, tx_context::sender(ctx)), EPlaying);
+        //assert!(!table::contains(&mut state.playing, tx_context::sender(ctx)), EPlaying);
         assert!(board_verifier::verify(board_hash, proof) == true, EBoardVerify);
         let game = Game {
             id: object::new(ctx),
@@ -99,7 +100,7 @@ module battleship::battleship {
         vector::push_back<address>(&mut game.participants, tx_context::sender(ctx));
         vector::push_back<vector<u8>>(&mut game.boards, board_hash);
         state.game_index = state.game_index + 1;
-        table::add(&mut state.playing, tx_context::sender(ctx), state.game_index);
+        //table::add(&mut state.playing, tx_context::sender(ctx), state.game_index);
         table::add(&mut state.games, state.game_index, game);
 
         event::emit(StartedEvent {
@@ -115,14 +116,14 @@ module battleship::battleship {
         proof: vector<u8>,
         ctx: &mut TxContext
     ) {
-        assert!(!table::contains(&mut state.playing, tx_context::sender(ctx)), EPlaying);
+        //assert!(!table::contains(&mut state.playing, tx_context::sender(ctx)), EPlaying);
         assert!(table::contains(&mut state.games, game_index), EGameIndex);
         assert!(vector::length(&table::borrow_mut(&mut state.games, game_index).participants) == 1, EFullAccounts);
         assert!(board_verifier::verify(board_hash, proof) == true, EBoardVerify);
         let game = table::borrow_mut(&mut state.games, game_index);
         vector::push_back<address>(&mut game.participants, tx_context::sender(ctx));
         vector::push_back<vector<u8>>(&mut game.boards, board_hash);
-        table::add(&mut state.playing, tx_context::sender(ctx), game_index);
+        //table::add(&mut state.playing, tx_context::sender(ctx), game_index);
 
         event::emit(JoindEvent {
             nonce: game_index,
@@ -133,7 +134,7 @@ module battleship::battleship {
     public entry fun first_turn(state: &mut State, game_index: u256, shot_x: u256, shot_y: u256, ctx: &mut TxContext) {
         assert!(table::contains(&mut state.games, game_index), EGameIndex);
         let game: &mut Game = table::borrow_mut(&mut state.games, game_index);
-        assert!(*table::borrow(&state.playing, tx_context::sender(ctx)) == game_index, EPlaying);
+        //assert!(*table::borrow(&state.playing, tx_context::sender(ctx)) == game_index, EPlaying);
         assert!(game.winner == from_u256(0), EGameOver);
         assert!(game.nonce == 0, EFirstTurn);
         let shot: vector<u256> = vector[shot_x, shot_y];
@@ -158,7 +159,7 @@ module battleship::battleship {
     ) {
         assert!(table::contains(&mut state.games, game_index), EGameIndex);
         let game: &mut Game = table::borrow_mut(&mut state.games, game_index);
-        assert!(*table::borrow(&state.playing, tx_context::sender(ctx)) == game_index, EPlaying);
+        //assert!(*table::borrow(&state.playing, tx_context::sender(ctx)) == game_index, EPlaying);
         assert!(game.winner == from_u256(0), EGameOver);
         let current: address;
         if (game.nonce % 2 == 0) {
