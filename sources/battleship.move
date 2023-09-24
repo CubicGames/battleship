@@ -11,8 +11,8 @@ module battleship::battleship {
     use std::vector::append;
     use sui::bcs::to_bytes;
 
-    //const HIT_MAX: u256 = 17;
-    const HIT_MAX: u256 = 2;
+    const HIT_MAX: u256 = 17;
+    //const HIT_MAX: u256 = 2;
     const EGameIndex: u64 = 1;
     const EPlaying: u64 = 2;
     const EFullAccounts: u64 = 3;
